@@ -2508,38 +2508,7 @@ function generatePDF(tabId) {
         .save();
 }
 
-const GS_URL = 'https://script.google.com/macros/s/AKfycbzzY5xhhN6QNcYDFdkUnNk1MOaxcwSF9Rk8Ka7cIlyljihN_PkZwBLmuoS114Ax8ia2gg/exec';
 
-async function callGS(functionName, data = {}) {
-    try {
-        const response = await fetch(GS_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `function=${functionName}&data=${JSON.stringify(data)}`
-        });
-        return await response.json();
-    } catch (error) {
-        return { error: error.toString() };
-    }
-}
-
-// جایگزینی google.script.run
-if (typeof google === 'undefined') {
-    // اگر در GitHub Pages هستیم
-    window.google = { 
-        script: {
-            run: {
-                withSuccessHandler: (success) => ({ withFailureHandler: (fail) => ({
-                    [functionName]: (data) => callGS(functionName, data).then(success).catch(fail)
-                })})
-            }
-        }
-    };
-}
-
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js');
-}
 
         // آدرس GS شما
 const GS_URL = 'https://script.google.com/macros/s/AKfycbzzY5xhhN6QNcYDFdkUnNk1MOaxcwSF9Rk8Ka7cIlyljihN_PkZwBLmuoS114Ax8ia2gg/exec';
