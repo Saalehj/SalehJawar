@@ -2523,6 +2523,20 @@ async function callGS(functionName, data = {}) {
     }
 }
 
+// جایگزینی google.script.run
+if (typeof google === 'undefined') {
+    // اگر در GitHub Pages هستیم
+    window.google = { 
+        script: {
+            run: {
+                withSuccessHandler: (success) => ({ withFailureHandler: (fail) => ({
+                    [functionName]: (data) => callGS(functionName, data).then(success).catch(fail)
+                })})
+            }
+        }
+    };
+}
+
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js');
 }
