@@ -2141,7 +2141,7 @@ function loadInvestorsData() {
     google.script.run
         .withSuccessHandler(function(result) {
             console.log('داتای خاوەن پشکەکان وەرگیرا:', result);
-            
+            let html = '';
             if (result.success) {
                 let html = '';
                 
@@ -2541,5 +2541,6 @@ async function callGS(functionName, data = {}) {
     </script>
 </body>
 </html>
+
 
 
