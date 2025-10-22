@@ -2540,6 +2540,91 @@ if (typeof google === 'undefined') {
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js');
 }
+
+        // آدرس GS شما
+const GS_URL = 'https://script.google.com/macros/s/AKfycbzzY5xhhN6QNcYDFdkUnNk1MOaxcwSF9Rk8Ka7cIlyljihN_PkZwBLmuoS114Ax8ia2gg/exec';
+
+// تابع جایگزین برای google.script.run
+async function callGS(functionName, data = {}) {
+    try {
+        console.log('فراخوانی تابع:', functionName, data);
+        
+        const response = await fetch(GS_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `function=${functionName}&data=${JSON.stringify(data)}`
+        });
+        
+        const result = await response.json();
+        console.log('نتیجه:', result);
+        return result;
+        
+    } catch (error) {
+        console.error('خطا در ارتباط با GS:', error);
+        return { error: error.toString() };
+    }
+}
+
+// جایگزین کردن google.script.run
+window.google = {
+    script: {
+        run: {
+            withSuccessHandler: (successHandler) => ({
+                withFailureHandler: (failureHandler) => ({
+                    // برای توابع بدون پارامتر
+                    getWaragrList: () => callGS('getWaragrList').then(successHandler).catch(failureHandler),
+                    getSystemReports: () => callGS('getSystemReports').then(successHandler).catch(failureHandler),
+                    getInvestorsData: () => callGS('getInvestorsData').then(successHandler).catch(failureHandler),
+                    getUniqueWaragrNames: () => callGS('getUniqueWaragrNames').then(successHandler).catch(failureHandler),
+                    updateAllData: () => callGS('updateAllData').then(successHandler).catch(failureHandler),
+                    
+                    // برای توابع با پارامتر
+                    getWaragrInfo: (waragrName, loanType) => callGS('getWaragrInfo', {waragrName, loanType}).then(successHandler).catch(failureHandler),
+                    getAllLoansForWaragr: (waragrName) => callGS('getAllLoansForWaragr', {waragrName}).then(successHandler).catch(failureHandler),
+                    saveNewLoan: (formData) => callGS('saveNewLoan', formData).then(successHandler).catch(failureHandler),
+                    saveInstallment: (formData) => callGS('saveInstallment', formData).then(successHandler).catch(failureHandler)
+                })
+            })
+        }
+    }
+};
+
+// تست ارتباط
+console.log('🔗 PWA فعال شد - منتظر ارتباط با GS...');
+
+// نمایش دکمه نصب PWA
+window.addEventListener('beforeinstallprompt', (e) => {
+    console.log('📱 برنامه قابل نصب است');
+    
+    const installBtn = document.createElement('button');
+    installBtn.innerHTML = '📲 نصب برنامه';
+    installBtn.style.cssText = `
+        position: fixed;
+        top: 100px;
+        left: 10px;
+        z-index: 10000;
+        background: #2ecc71;
+        color: white;
+        border: none;
+        padding: 12px 16px;
+        border-radius: 25px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+        font-family: Vazirmatn, sans-serif;
+    `;
+    
+    installBtn.onclick = async () => {
+        e.prompt();
+        installBtn.style.display = 'none';
+    };
+    
+    document.body.appendChild(installBtn);
+});
     </script>
 </body>
 </html>
+
